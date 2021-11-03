@@ -1,1 +1,85 @@
-# This is the ISAM Playbook
+---
+- name: Run ISAM First Steps
+  vars_files:
+  - isam.env
+  hosts: 172.31.31.26
+  connection: local
+
+  tasks:
+
+  - name: Get ISAM DB2 Runtime Database Configuration Script
+    uri:
+      url: "https://{{ inventory_hostname }}:{{ isam_lmi_port }}/isam/downloads/access_control/database/db2/runtime/isam_access_control_db2.sql"
+      user: "{{isam_admin_id}}"
+      password: "{{isam_admin_pw}}"
+      method: GET
+      force_basic_auth: yes
+      validate_certs: no
+      status_code: 200
+      headers:
+        Accept: application/json
+      return_content: yes
+    register: uri_out
+
+  - name: Debug URI Out
+    debug:
+      msg: "{{ uri_out }}"
+
+  - name: Debug Type 1
+    debug:
+      msg: "{{ uri_out | type_debug }}"
+
+  - name: Debug Type 2
+    debug:
+      msg: "{{ uri_out.content | type_debug }}"
+
+  - name: Cast to json
+    debug:
+      msg: "{{ uri_out.content | to_json | type_debug }}"
+
+  - name: Show cast data
+    debug:
+      msg: "{{ uri_out.content | from_json }}"
+
+  - name: Just the data
+    vars:
+      the_data: "{{ uri_out.content | from_json }}"
+    debug:
+      msg: "{{ the_data.contents }}"
+
+  - name: One Step
+    debug:
+      msg: "{{ ( uri_out.content | from_json ).contents }}"
+
+  - name: Write File
+    copy:
+      content: "{{ ( uri_out.content | from_json ).contents }}"
+#     content="{{ uri_out.content.replace('\\n','\n') }}"
+#     content="{{ uri_out.content["contents"] }}"
+      dest: /tmp/isam_access_control_db2.sql
+
+  - name: Export ISAM Database
+    uri:
+      url: "https://{{ inventory_hostname }}:{{ isam_lmi_port }}/isam/cluster/hvdb/v1?type=db2"
+      user: "{{isam_admin_id}}"
+      password: "{{isam_admin_pw}}"
+      method: GET
+      force_basic_auth: yes
+      validate_certs: no
+      status_code: 200
+      headers:
+        Accept: application/json
+      return_content: yes
+    register: uri_out
+
+  - name: Debug URI Out
+    debug:
+      var: uri_out
+
+  - name: Write File
+    copy:
+      content: "{{ uri_out.content }}"
+      dest: /tmp/hvdb.zip
+
+# Now I need to get the files to the DB2 server where I can run them. Or should I run Ansible from my Docker host? Then I can readily use docker cp to get the files I need there and issue local OS commands to exec processes.
+...
