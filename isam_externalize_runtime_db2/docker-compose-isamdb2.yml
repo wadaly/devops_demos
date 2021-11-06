@@ -1,0 +1,35 @@
+version: '3'
+
+volumes:
+
+  db2data_runtime:
+
+services:
+
+  isamdb2:
+    hostname: isamdb2
+    container_name: isamdb2
+    image: ibmcom/db2
+    restart: always
+    privileged: true
+    environment:
+      - LICENSE=accept
+      - DB2INSTANCE=$ISAM_RT_DB_INST
+      - DB2INST1_PASSWORD=$ISAM_RT_DB_PW
+      - DBNAME=$ISAM_RT_DB_NAME
+      - BLU=false
+      - ENABLE_ORACLE_COMPATIBILITY=false
+      - UPDATEAVAIL=NO
+      - TO_CREATE_SAMPLEDB=false
+      - REPODB=false
+      - IS_OSXFS=false
+      - PERSISTENT_HOME=false
+      - HADR_ENABLED=false
+      - ETCD_ENDPOINT=
+      - ETCD_USERNAME=
+      - TZ=$ISAM_RT_DB_TZ
+    volumes:
+      - db2data_runtime:/database
+    ports:
+      - 50000:50000
+      
