@@ -9,7 +9,7 @@ Second, run isamlab.yml as follows using docker-compose to startup ISAM V9 Docke
 
 > docker-compose --file isamlab.yml up -d
 
-If you do not have a license key to enable the ISAM web, AAC, and federation features, you may request one here:
+If you do not have a license key to enable the ISAM web, AAC, and federation features, you may request a 90 day trial license key here:
 
 > https://ibm.biz/isamtrial
 
