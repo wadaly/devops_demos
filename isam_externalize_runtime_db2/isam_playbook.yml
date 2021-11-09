@@ -91,6 +91,7 @@
           regexp: '&DBUSER'
           replace: "{{ isam_rt_db_id }}"
 
+# Update this logic to prevent echo of password data.
       - name: Replace &DBPASSWORD
         replace:
           path: /tmp/isam_access_control_db2.sql
