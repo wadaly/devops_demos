@@ -3,6 +3,7 @@ This directory contains resources for starting up an ISAM V9 Docker lab.
 First, run bootstrap.yml as follows using docker-compose to create digital certificates for OpenLDAP and PostgreSQL.
 
 > docker-compose --file bootstrap.yml up -d
+
 > docker-compose --file bootstrap.yml down -v
 
 Second, run isamlab.yml as follows using docker-compose to startup ISAM V9 Docker lab containers.
