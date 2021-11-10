@@ -105,6 +105,21 @@
         register: configure_db_out
         failed_when: false
 
+# isam_access_control_db2.sql contains sensitive infomration.
+# We should remove it upon success or failure.
+ 
+      - name: Remove remote isam_access_control_db2.sql file
+        shell: >
+          /usr/bin/docker exec isamdb2 rm -f /tmp/isam_access_control_db2.sql;
+        register: remove_remote_file
+        failed_when: False
+
+      - name: Remove local isam_access_control_db2.sql file
+        shell: >
+          rm -f /tmp/isam_access_control_db2.sql;
+        register: remove_local_file
+        failed_when: False
+
       - name: Debug configure_db_out
         debug:
           var: configure_db_out.stdout_lines
@@ -126,21 +141,6 @@
           msg: "There were DB2 error messages in the output of \"db2 -tsvf /tmp/isam_access_control_db2.sql\""
         when:
           - configure_db_out | string | regex_search('[DS][BQ][2L][0-9][0-9][0-9][0-9]E')
-
-# isam_access_control_db2.sql contains sensitive infomration.
-# We should remove it upon success or failure.
- 
-      - name: Remove remote isam_access_control_db2.sql file
-        shell: >
-          /usr/bin/docker exec isamdb2 rm -f /tmp/isam_access_control_db2.sql;
-        register: remove_remote_file
-        failed_when: False
-
-      - name: Remove local isam_access_control_db2.sql file
-        shell: >
-          rm -f /tmp/isam_access_control_db2.sql;
-        register: remove_local_file
-        failed_when: False
 
       - name: Fail on non-zero exit code for configure_db_out or file removal
         fail:
